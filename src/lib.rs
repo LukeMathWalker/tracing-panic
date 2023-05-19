@@ -16,6 +16,7 @@ use std::panic::PanicInfo;
 /// ```rust
 /// use tracing_panic::panic_hook;
 ///
+/// # #[allow(clippy::needless_doctest_main)]
 /// fn main() {
 ///     // Initialize your `tracing` subscriber however you like.
 ///     // [...]
@@ -24,13 +25,14 @@ use std::panic::PanicInfo;
 ///     std::panic::set_hook(Box::new(panic_hook));
 /// }
 /// ```
-/// 
+///
 /// # Backtrace
-/// 
+///
 /// The hook currently doesn't try to capture a backtrace.
 pub fn panic_hook(panic_info: &PanicInfo) {
     let payload = panic_info.payload();
 
+    #[allow(clippy::manual_map)]
     let payload = if let Some(s) = payload.downcast_ref::<&str>() {
         Some(&**s)
     } else if let Some(s) = payload.downcast_ref::<String>() {
