@@ -49,7 +49,6 @@ use std::panic::PanicInfo;
 ///     }));
 /// }
 /// ```
-
 pub fn panic_hook(panic_info: &PanicInfo) {
     let payload = panic_info.payload();
 
