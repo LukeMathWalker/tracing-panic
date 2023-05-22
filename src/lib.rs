@@ -29,6 +29,26 @@ use std::panic::PanicInfo;
 /// # Backtrace
 ///
 /// The hook currently doesn't try to capture a backtrace.
+///
+/// # Preserving previous hook
+///
+/// Sometimes it's desirable to preserve the previous panic hook, because other crates
+/// might rely on their panic hook integration to function properly.
+///
+/// For this behavior, you can do the following:
+///
+/// ```rust
+/// use tracing_panic::panic_hook;
+///
+/// # #[allow(clippy::needless_doctest_main)]
+/// fn main() {
+///     let prev_hook = std::panic::take_hook();
+///     std::panic::set_hook(Box::new(move |panic_info| {
+///         panic_hook(panic_info);
+///         prev_hook(panic_info);
+///     }));
+/// }
+/// ```
 pub fn panic_hook(panic_info: &PanicInfo) {
     let payload = panic_info.payload();
 
