@@ -3,7 +3,7 @@ name: Rust
 on:
   push:
     branches:
-      - main 
+      - main
   pull_request:
     types: [ opened, synchronize, reopened ]
     branches:
@@ -23,7 +23,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: Rust Cache Action
         uses: Swatinem/rust-cache@v2
-      - name: Run tests
+      - name: Run tests (no-default-features)
+        run: cargo test --no-default-features
+      - name: Run tests (with default features)
         run: cargo test
 
   fmt:
@@ -46,5 +48,7 @@ jobs:
         with:
           components: clippy
       - uses: Swatinem/rust-cache@v2
-      - name: Linting
+      - name: Linting (no-default-features)
+        run: cargo clippy --no-default-features -- -D warnings
+      - name: Linting (with default features)
         run: cargo clippy -- -D warnings

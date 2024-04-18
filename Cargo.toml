@@ -8,6 +8,10 @@ description = "A panic hook that captures panic information as a tracing event"
 keywords = ["logging", "tracing", "panic", "telemetry", "hook"]
 categories = ["development-tools::debugging"]
 
+[features]
+default = ["capture-backtrace"]
+capture-backtrace = []
+
 [dependencies]
 tracing = "0.1"
 tracing-subscriber = "0.3"
