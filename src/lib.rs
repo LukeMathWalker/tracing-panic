@@ -1,7 +1,10 @@
 //! A panic hook that emits an error-level `tracing` event when a panic occurs.
 //!
 //! Check out [`panic_hook`]'s documentation for more information.
-use std::{backtrace::Backtrace, panic::PanicInfo};
+use std::{
+    backtrace::{Backtrace, BacktraceStatus},
+    panic::PanicInfo,
+};
 
 /// A panic hook that emits an error-level `tracing` event when a panic occurs.
 ///
@@ -62,12 +65,25 @@ pub fn panic_hook(panic_info: &PanicInfo) {
     };
 
     let location = panic_info.location().map(|l| l.to_string());
-    let backtrace = cfg!(feature = "capture-backtrace").then(Backtrace::force_capture);
+    let (backtrace, note) = if cfg!(feature = "capture-backtrace") {
+        let backtrace = Backtrace::capture();
+        if let BacktraceStatus::Disabled = backtrace.status() {
+            (
+                Some(backtrace),
+                Some("run with RUST_BACKTRACE=1 environment variable to display a backtrace"),
+            )
+        } else {
+            (Some(backtrace), None)
+        }
+    } else {
+        (None, None)
+    };
 
     tracing::error!(
         panic.payload = payload,
         panic.location = location,
         panic.backtrace = backtrace.map(tracing::field::display),
+        panic.note = note.map(tracing::field::display),
         "A panic occurred",
     );
 }
