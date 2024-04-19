@@ -78,7 +78,7 @@ pub fn panic_hook(panic_info: &PanicInfo) {
         panic.payload = payload,
         panic.location = location,
         panic.backtrace = backtrace.map(tracing::field::display),
-        panic.note = note.map(tracing::field::display),
+        panic.note = note,
         "A panic occurred",
     );
 }
