@@ -1,7 +1,10 @@
 //! A panic hook that emits an error-level `tracing` event when a panic occurs.
 //!
 //! Check out [`panic_hook`]'s documentation for more information.
-use std::panic::PanicInfo;
+use std::{
+    backtrace::{Backtrace, BacktraceStatus},
+    panic::PanicInfo,
+};
 
 /// A panic hook that emits an error-level `tracing` event when a panic occurs.
 ///
@@ -62,10 +65,20 @@ pub fn panic_hook(panic_info: &PanicInfo) {
     };
 
     let location = panic_info.location().map(|l| l.to_string());
+    let (backtrace, note) = if cfg!(feature = "capture-backtrace") {
+        let backtrace = Backtrace::capture();
+        let note = (backtrace.status() == BacktraceStatus::Disabled)
+            .then_some("run with RUST_BACKTRACE=1 environment variable to display a backtrace");
+        (Some(backtrace), note)
+    } else {
+        (None, None)
+    };
 
     tracing::error!(
         panic.payload = payload,
         panic.location = location,
+        panic.backtrace = backtrace.map(tracing::field::display),
+        panic.note = note,
         "A panic occurred",
     );
 }
@@ -89,6 +102,34 @@ mod tests {
 
         let logs = String::from_utf8(buffer.lock().unwrap().clone()).unwrap();
         assert!(logs.contains("This is a static panic message"));
+    }
+
+    #[cfg(feature = "capture-backtrace")]
+    #[test]
+    fn panic_has_backtrace() {
+        let buffer = Arc::new(Mutex::new(vec![]));
+        let _guard = init_subscriber(buffer.clone());
+        let _ = std::panic::catch_unwind(|| {
+            std::panic::set_hook(Box::new(panic_hook));
+            panic!("This is a static panic message");
+        });
+
+        let logs = String::from_utf8(buffer.lock().unwrap().clone()).unwrap();
+        assert!(logs.contains("backtrace"));
+    }
+
+    #[cfg(not(feature = "capture-backtrace"))]
+    #[test]
+    fn panic_has_no_backtrace() {
+        let buffer = Arc::new(Mutex::new(vec![]));
+        let _guard = init_subscriber(buffer.clone());
+        let _ = std::panic::catch_unwind(|| {
+            std::panic::set_hook(Box::new(panic_hook));
+            panic!("This is a static panic message");
+        });
+
+        let logs = String::from_utf8(buffer.lock().unwrap().clone()).unwrap();
+        assert!(!logs.contains("backtrace"));
     }
 
     #[test]
