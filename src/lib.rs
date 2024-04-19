@@ -31,7 +31,12 @@ use std::{
 ///
 /// # Backtrace
 ///
-/// The hook currently doesn't try to capture a backtrace.
+/// If the `capture-backtrace` feature flag is enabled, `tracing-panic` will try to
+/// capture a backtrace.  
+/// Whether a backtrace is actually captured depends on the value of a few
+/// environment variables, defined in Rust's standard library.
+/// Check out [`std`'s documentation](https://doc.rust-lang.org/std/backtrace/#environment-variables)
+/// for more details.
 ///
 /// # Preserving previous hook
 ///
