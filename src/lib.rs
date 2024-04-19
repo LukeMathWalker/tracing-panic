@@ -67,14 +67,9 @@ pub fn panic_hook(panic_info: &PanicInfo) {
     let location = panic_info.location().map(|l| l.to_string());
     let (backtrace, note) = if cfg!(feature = "capture-backtrace") {
         let backtrace = Backtrace::capture();
-        if let BacktraceStatus::Disabled = backtrace.status() {
-            (
-                Some(backtrace),
-                Some("run with RUST_BACKTRACE=1 environment variable to display a backtrace"),
-            )
-        } else {
-            (Some(backtrace), None)
-        }
+        let note = (backtrace.status() == BacktraceStatus::Disabled)
+            .then_some("run with RUST_BACKTRACE=1 environment variable to display a backtrace");
+        (Some(backtrace), note)
     } else {
         (None, None)
     };
