@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> **`tracing-panic` has moved to [LukeMathWalker/officina](https://github.com/LukeMathWalker/officina/tree/main/tracing-panic).**
+> This repository is archived: development, issues and releases continue there. The `tracing-panic` crate on crates.io is unaffected.
+
 <h1 align="center">tracing-panic</h1>
 <div align="center">
  <strong>
