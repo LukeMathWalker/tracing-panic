@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3](https://github.com/LukeMathWalker/tracing-panic/compare/v0.1.2...v0.1.3) - 2026-10-24
+
+### Other
+
+- point to LukeMathWalker/officina, where development continues
+
 ## [0.1.1](https://github.com/LukeMathWalker/tracing-panic/compare/v0.1.0...v0.1.1) - 2023-05-22
 
 ### Other
